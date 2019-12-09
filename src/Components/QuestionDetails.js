@@ -1,9 +1,12 @@
 import React, { PureComponent } from 'react';
 import { Card, CardHeader,CardBody, CardTitle, FormGroup, Label, Input, Form, Button, Row, Col} from 'reactstrap';
 import { connect } from 'react-redux';
+//import { Redirect } from 'react-router-dom';
+import PropTypes from 'prop-types';
+
 import User from '../Components/User';
 import { handleAnswer } from '../actions/shared';
-import PropTypes from 'prop-types';
+import  NotFound  from '../Components/NotFound'
 
 class QuestionDetails extends PureComponent {
   state = {
@@ -22,9 +25,14 @@ class QuestionDetails extends PureComponent {
   };
 
   render() {
-    const { question, questionAuthor, answer, total, percOne, percTwo} = this.props;
+    const { question, questionAuthor, answer, total, percOne, percTwo, validQuestion} = this.props;
     const { selectedOption } = this.state;
 
+    if (validQuestion ===false ){
+      return(
+        <NotFound />
+      )
+    }
     return (
       <Row>
         <Col sm="12" md={{ size: 6, offset: 3 }}>
@@ -89,7 +97,8 @@ QuestionDetails.propTypes = {
   questionAuthor: PropTypes.object,
   answer: PropTypes.string,
   percOne: PropTypes.string.isRequired,
-  percTwo: PropTypes.string.isRequired
+  percTwo: PropTypes.string.isRequired,
+  validQuestion: PropTypes.string.isRequired
 };
 
 function financial(x) {
@@ -98,23 +107,33 @@ function financial(x) {
 
 function mapStateToProps ({ questions, users, authedUser }, { match }) {
   const answers = users[authedUser].answers;
-  let answer, percOne, percTwo, total;
+  let answer, percOne, percTwo, total, validQuestion, question,questionAuthor;
   const { id } = match.params;
-  const question = questions[id];
-  if (answers.hasOwnProperty(question.id)) {
-    answer = answers[question.id]
+  
+  validQuestion =  (questions.hasOwnProperty(id));
+  
+  if (validQuestion){
+    question = questions[id];
+    
+    if (answers.hasOwnProperty(question.id)) {
+      answer = answers[question.id]
+    }
+
+    questionAuthor = users[question.author];
+    total = question.optionOne.votes.length + question.optionTwo.votes.length;
+    percOne = financial((question.optionOne.votes.length / total) * 100);
+    percTwo = financial((question.optionTwo.votes.length / total) * 100);
+
   }
-  const questionAuthor = users[question.author];
-  total = question.optionOne.votes.length + question.optionTwo.votes.length;
-  percOne = financial((question.optionOne.votes.length / total) * 100);
-  percTwo = financial((question.optionTwo.votes.length / total) * 100);
+
   return {
     question,
     questionAuthor,
     answer,
     total,
     percOne,
-    percTwo
+    percTwo,
+    validQuestion
   }
 }
 

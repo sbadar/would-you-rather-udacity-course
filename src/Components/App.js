@@ -2,11 +2,12 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 import { handleInitialData }  from '../actions/shared'
 import Routes from '../Components/Routes'
 import NavBar from '../Components/TopNavigationBar';
+import Login from "../Components/Login";
 
 class App extends Component {
   componentDidMount(){
@@ -14,13 +15,18 @@ class App extends Component {
   }
   render() {
     const { notLoggedIn } = this.props;
-
+    console.error('not logged in --------> ' + notLoggedIn)
     return (
       <Router>
         <Fragment>
           <div className="main-container">
             <NavBar/>
-            <Routes notLoggedIn={notLoggedIn}/>
+            <Switch>
+              {
+                notLoggedIn===true ? <Route component={Login}/> :
+                <Routes notLoggedIn={notLoggedIn}/>
+              }
+            </Switch>
           </div>
         </Fragment>
       </Router>

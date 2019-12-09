@@ -2,6 +2,7 @@ import React from "react"
 import PropTypes from "prop-types"
 import {Button, Card, CardBody, CardHeader} from 'reactstrap';
 import CardTitle from "reactstrap/es/CardTitle";
+import {withRouter} from 'react-router-dom'
 
 const NotFound = ({ history }) => (
   <Card>
@@ -21,4 +22,4 @@ NotFound.propTypes = {
   }).isRequired
 };
 
-export default NotFound
+export default (withRouter)(NotFound)
